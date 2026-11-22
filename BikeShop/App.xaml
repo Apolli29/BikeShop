@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:BikeShop.Converters"
              StartupUri="Window/LoginWindow.xaml">
     <Application.Resources>
+        <ResourceDictionary>
         <local:ImagePathConverter x:Key="ImagePathConverter"/>
         <local:DiscountToVisibilityConverter x:Key="DiscountToVisibility"/>
         <local:FinalPriceConverter x:Key="FinalPriceConverter"/>
@@ -29,5 +30,15 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource SecondaryBg}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="15,7"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
