@@ -50,5 +50,26 @@ namespace BikeShop
             if (CurrentUser.IsAdmin)
                 btnAdd.Visibility = Visibility.Visible;
         }
+        private void DgProducts_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            var product = e.Row.Item as Products;
+            if (product == null) return;
+
+            if (product.Quantity == 0)
+            {
+                e.Row.Background = new SolidColorBrush(Colors.LightGray);
+                e.Row.Foreground = new SolidColorBrush(Colors.DarkGray);
+            }
+            else if ((decimal)product.Discount > 15)
+            {
+                e.Row.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#483D8B"));
+                e.Row.Foreground = new SolidColorBrush(Colors.White);
+            }
+            else
+            {
+                e.Row.Background = new SolidColorBrush(Colors.White);
+                e.Row.Foreground = new SolidColorBrush(Colors.Black);
+            }
+        }
     }
 }
