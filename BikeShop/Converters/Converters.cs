@@ -41,6 +41,7 @@ namespace BikeShop.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null) return Visibility.Collapsed;
             decimal discount = System.Convert.ToDecimal(value);
             return discount > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -57,10 +58,15 @@ namespace BikeShop.Converters
             var product = value as Products;
             if (product == null) return "0 руб.";
 
-            decimal finalPrice = product.price;
-            if (product.discount > 0)
-                finalPrice = product.price - (product.price * product.discount / 100);
-            return finalPrice.ToString("0.00") + " руб.";
+            decimal price = product.Price;
+            decimal discount = (decimal)product.Discount;
+
+            if (discount > 0)
+            {
+                decimal finalPrice = price - (price * discount / 100);
+                return finalPrice.ToString("0.00") + " руб.";
+            }
+            return price.ToString("0.00") + " руб.";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
