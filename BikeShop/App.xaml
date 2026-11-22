@@ -7,9 +7,17 @@
         <local:ImagePathConverter x:Key="ImagePathConverter"/>
         <local:DiscountToVisibilityConverter x:Key="DiscountToVisibility"/>
         <local:FinalPriceConverter x:Key="FinalPriceConverter"/>
+        
         <SolidColorBrush x:Key="MainBg" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="SecondaryBg" Color="#6A5ACD"/>
         <SolidColorBrush x:Key="AccentColor" Color="#4B0082"/>
         <SolidColorBrush x:Key="DiscountBg" Color="#483D8B"/>
+
+        <Style TargetType="Window">
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Background" Value="{StaticResource MainBg}"/>
+            <Setter Property="MinWidth" Value="800"/>
+            <Setter Property="MinHeight" Value="500"/>
+        </Style>
     </Application.Resources>
 </Application>
