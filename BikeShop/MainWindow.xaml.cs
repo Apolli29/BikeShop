@@ -23,7 +23,7 @@ namespace BikeShop
     public partial class MainWindow : Window
     {
         private BikeStoreDBEntities db = new BikeStoreDBEntities();
-        private List<Products> allproducts;
+        private List<Products> Products;
         public MainWindow()
         {
             InitializeComponent();
@@ -34,13 +34,13 @@ namespace BikeShop
         {
             lblFio.Text = CurrentUser.Fio + " (" + CurrentUser.RoleName + ")";
 
-            allProducts = db.Products
+            Products = db.Products
                 .Include("Categories")
                 .Include("Manufacturers")
                 .Include("Suppliers")
                 .ToList();
 
-            dgProducts.ItemsSource = allProducts;
+            dgProducts.ItemsSource = Products;
         }
         private void ApplyRolePermissions()
         {
@@ -70,6 +70,28 @@ namespace BikeShop
                 e.Row.Background = new SolidColorBrush(Colors.White);
                 e.Row.Foreground = new SolidColorBrush(Colors.Black);
             }
+        }
+        private void DgProducts_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (!CurrentUser.IsAdmin) return;
+            var selected = dgProducts.SelectedItem as Products;
+            if (selected == null) return;
+            MessageBox.Show("Редактирование товара: " + selected.ProductName);
+        }
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Форма добавления товара будет в Модуле 3");
+        }
+        private void BtnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentUser.Clear();
+            LoginWindow login = new LoginWindow();
+            login.Show();
+            this.Close();
+        }
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Список заказов будет в Модуле 4");
         }
     }
 }
