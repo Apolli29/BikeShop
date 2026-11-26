@@ -7,28 +7,62 @@
         mc:Ignorable="d"
         Title="ВелосипедДрайв" Height="650" Width="1000" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <!-- Шапка -->
+                <RowDefinition Height="Auto"/>
+                <!-- Панель поиска и фильтров -->
+                <RowDefinition Height="*"/>
+                <!-- Список товаров -->
+                <RowDefinition Height="60"/>
+                <!-- Кнопки снизу -->
+            </Grid.RowDefinitions>
+
+            <!-- ШАПКА (оставляем как было) -->
         <Border Grid.Row="0" Background="{StaticResource SecondaryBg}">
             <Grid Margin="15,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Image Source="/images/icon.png" Height="60" Margin="0,0,15,0"/>
-                    <TextBlock Text="ВелосипедДрайв" FontSize="22" FontWeight="Bold"
-                               Foreground="Wheat" VerticalAlignment="Center"/>
+                    <TextBlock Text="ВелосипедДрайв" FontSize="22" FontWeight="Bold" 
+                               Foreground="White" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock x:Name="lblFio" Foreground="Wheat" FontSize="14"
+                    <TextBlock x:Name="lblFio" Foreground="White" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,15,0"/>
-                    <Button x:Name="btnOrders" Content="Заказы" Style="{StaticResource AccentButton}"
-                          Margin="0,0,10,0" Click="BtnOrders_Click" Visibility="Collapsed"/>
+                    <Button x:Name="btnOrders" Content="Заказы" Style="{StaticResource AccentButton}" 
+                            Margin="0,0,10,0" Click="BtnOrders_Click" Visibility="Collapsed"/>
                     <Button Content="Выйти" Style="{StaticResource AccentButton}" Click="BtnLogout_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
-        <DataGrid x:Name="dgProducts" Grid.Row="1" 
+        <Border x:Name="pnlControls" Grid.Row="1" Background="#F0F0F0" Padding="10" Margin="10,5" Visibility="Collapsed">
+            <WrapPanel VerticalAlignment="Center">
+                <TextBlock Text="Поиск:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <TextBox x:Name="txtSearch" Width="250" Height="30" Margin="0,0,20,0" 
+                         TextChanged="TxtSearch_TextChanged"/>
+                <TextBlock Text="Скидка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <ComboBox x:Name="cmbFilterDiscount" Width="150" Height="30" Margin="0,0,20,0"
+                          SelectionChanged="CmbFilterDiscount_SelectionChanged">
+                    <ComboBoxItem Content="Все диапазоны" IsSelected="True"/>
+                    <ComboBoxItem Content="0 - 11,99%"/>
+                    <ComboBoxItem Content="12 - 18,99%"/>
+                    <ComboBoxItem Content="19% и более"/>
+                </ComboBox>
+                <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <ComboBox x:Name="cmbSortBy" Width="120" Height="30" Margin="0,0,5,0"
+                          SelectionChanged="CmbSort_SelectionChanged">
+                    <ComboBoxItem Content="По цене" IsSelected="True"/>
+                    <ComboBoxItem Content="По скидке"/>
+                    <ComboBoxItem Content="По остатку"/>
+                </ComboBox>
+                <ComboBox x:Name="cmbSortDir" Width="130" Height="30" Margin="0,0,0,0"
+                          SelectionChanged="CmbSort_SelectionChanged">
+                    <ComboBoxItem Content="По возрастанию" IsSelected="True"/>
+                    <ComboBoxItem Content="По убыванию"/>
+                </ComboBox>
+            </WrapPanel>
+        </Border>
+        <DataGrid x:Name="dgProducts" Grid.Row="2" 
                   AutoGenerateColumns="False" IsReadOnly="True"
                   CanUserAddRows="False" CanUserDeleteRows="False"
                   SelectionMode="Single" Margin="10"
@@ -39,43 +73,38 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Image Height="60" Width="80" Stretch="Uniform"
-                                   Source="{Binding image_path, Converter={StaticResource ImagePathConverter}}"/>
+                                   Source="{Binding Photo, Converter={StaticResource ImagePathConverter}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
-                <DataGridTextColumn Header="Артикул" Binding="{Binding article}" Width="80"/>
-                <DataGridTextColumn Header="Наименование" Binding="{Binding product_name}" Width="*"/>
-                <DataGridTextColumn Header="Категория" Binding="{Binding Categories.category_name}" Width="150"/>
-                <DataGridTextColumn Header="Производитель" Binding="{Binding Manufacturers.manufacturer_name}" Width="120"/>
-                <DataGridTextColumn Header="Поставщик" Binding="{Binding Suppliers.supplier_name}" Width="120"/>
-
+                <DataGridTextColumn Header="Артикул" Binding="{Binding SKU}" Width="80"/>
+                <DataGridTextColumn Header="Наименование" Binding="{Binding ProductName}" Width="*"/>
+                <DataGridTextColumn Header="Категория" Binding="{Binding Categories.CategoryName}" Width="150"/>
+                <DataGridTextColumn Header="Производитель" Binding="{Binding Manufacturers.ManufacturerName}" Width="120"/>
+                <DataGridTextColumn Header="Поставщик" Binding="{Binding Suppliers.SupplierName}" Width="120"/>
                 <DataGridTemplateColumn Header="Цена" Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding price, StringFormat={}{0} руб.}" 
-                                           Foreground="Red"
-                                           TextDecorations="Strikethrough"
+                                <TextBlock Text="{Binding Price, StringFormat={}{0} руб.}" 
+                                           Foreground="Red" TextDecorations="Strikethrough"
                                            Margin="0,0,5,0"
-                                           Visibility="{Binding discount, Converter={StaticResource DiscountToVisibility}}"/>
-                                <TextBlock Text="{Binding ., Converter={StaticResource FinalPriceConverter}}" 
-                                           FontWeight="Bold"/>
+                                           Visibility="{Binding Discount, Converter={StaticResource DiscountToVisibility}}"/>
+                                <TextBlock Text="{Binding ., Converter={StaticResource FinalPriceConverter}}" FontWeight="Bold"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
-                <DataGridTextColumn Header="Скидка, %" Binding="{Binding discount}" Width="70"/>
-                <DataGridTextColumn Header="Остаток" Binding="{Binding stock}" Width="70"/>
+                <DataGridTextColumn Header="Скидка, %" Binding="{Binding Discount}" Width="70"/>
+                <DataGridTextColumn Header="Остаток" Binding="{Binding Quantity}" Width="70"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Border Grid.Row="2" Background="{StaticResource SecondaryBg}">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button x:Name="btnAdd" Content="Добавить товар" 
+        <Border Grid.Row="3" Background="{StaticResource SecondaryBg}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="btnAdd" Content="Добавить товар" 
                         Style="{StaticResource AccentButton}" 
                         Click="BtnAdd_Click" Visibility="Collapsed"/>
-            </StackPanel>
-        </Border>
-    </Grid>
-</Window>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Window>
