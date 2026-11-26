@@ -21,8 +21,9 @@ namespace BikeShop
         {
             private BikeStoreDBEntities db = new BikeStoreDBEntities();
             private List<Products> allProducts;
+            private ProductEditWindow _editWindow;
 
-            public MainWindow()
+        public MainWindow()
             {
                 InitializeComponent();
                 LoadData();
@@ -141,20 +142,42 @@ namespace BikeShop
                 ApplyFiltersAndSort();
             }
 
-            private void DgProducts_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void DgProducts_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (!CurrentUser.IsAdmin) return;
+
+            var selected = dgProducts.SelectedItem as Products;
+            if (selected == null) return;
+
+            OpenEditWindow(selected);
+        }
+
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            OpenEditWindow(null);
+        }
+        private void OpenEditWindow(Products product)
+        {
+            if (_editWindow != null && _editWindow.IsVisible)
             {
-                if (!CurrentUser.IsAdmin) return;
-                var selected = dgProducts.SelectedItem as Products;
-                if (selected == null) return;
-                MessageBox.Show("Редактирование товара: " + selected.ProductName + "\n(Форма будет в следующем шаге)", "Информация");
+                MessageBox.Show("Окно редактирования уже открыто! Закройте его, чтобы продолжить.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _editWindow.Activate();
+                return;
             }
 
-            private void BtnAdd_Click(object sender, RoutedEventArgs e)
-            {
-                MessageBox.Show("Форма добавления товара будет в следующем шаге", "Информация");
-            }
+            _editWindow = new ProductEditWindow(product);
+            _editWindow.Owner = this;
 
-            private void BtnLogout_Click(object sender, RoutedEventArgs e)
+            _editWindow.Closed += (s, args) =>
+            {
+                _editWindow = null;
+                LoadData();
+            };
+
+            _editWindow.Show();
+        }
+
+        private void BtnLogout_Click(object sender, RoutedEventArgs e)
             {
                 CurrentUser.Clear();
                 LoginWindow login = new LoginWindow();
