@@ -104,7 +104,10 @@
                     <Button x:Name="btnAdd" Content="Добавить товар" 
                         Style="{StaticResource AccentButton}" 
                         Click="BtnAdd_Click" Visibility="Collapsed"/>
-                </StackPanel>
+                <Button x:Name="btnDelete" Content="Удалить товар" 
+                        Style="{StaticResource AccentButton}" 
+                        Click="BtnDelete_Click" Visibility="Collapsed" Margin="15,0,0,0"/>
+            </StackPanel>
             </Border>
         </Grid>
     </Window>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,10 @@ namespace BikeShop
                 }
 
                 if (CurrentUser.IsAdmin)
+                {
                     btnAdd.Visibility = Visibility.Visible;
+                    btnDelete.Visibility = Visibility.Visible;
+                }
             }
             private void DgProducts_LoadingRow(object sender, DataGridRowEventArgs e)
             {
@@ -155,6 +159,55 @@ namespace BikeShop
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             OpenEditWindow(null);
+        }
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedProduct = dgProducts.SelectedItem as Products;
+            if (selectedProduct == null)
+            {
+                MessageBox.Show("Пожалуйста, выберите товар в таблице для удаления.",
+                                "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            bool isInOrder = db.OrderDetails.Any(od => od.ProductID == selectedProduct.ProductID);
+
+            if (isInOrder)
+            {
+                MessageBox.Show($"Нельзя удалить товар \"{selectedProduct.ProductName}\", так как он уже присутствует в оформленных заказах.",
+                                "Ошибка удаления", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"Вы действительно хотите безвозвратно удалить товар \"{selectedProduct.ProductName}\"?",
+                "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(selectedProduct.Photo))
+                    {
+                        string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images", selectedProduct.Photo);
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                        }
+                    }
+                    db.Products.Remove(selectedProduct);
+                    db.SaveChanges();
+                    MessageBox.Show("Товар успешно удален из базы данных.",
+                                    "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Произошла ошибка при удалении товара: " + ex.Message,
+                                    "Ошибка базы данных", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
         private void OpenEditWindow(Products product)
         {
