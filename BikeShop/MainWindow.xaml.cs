@@ -238,9 +238,10 @@ namespace BikeShop
                 this.Close();
             }
 
-            private void BtnOrders_Click(object sender, RoutedEventArgs e)
-            {
-                MessageBox.Show("Список заказов будет в Модуле 4", "Информация");
-            }
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
+        {
+            OrderListWindow ordersWin = new OrderListWindow();
+            ordersWin.Show();
         }
+    }
 }
